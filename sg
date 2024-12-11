@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savings Goal Program - Christmas Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('https://example.com/christmas-background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            color: #fff;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+        }
+        input {
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            margin-bottom: 10px;
+            width: 80%;
+            max-width: 300px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #ff3d3d;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #ff6961;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .roulette {
+            display: none;
+            margin-top: 20px;
+        }
+        .prizes {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            animation: spin 0s linear infinite;
+        }
+        .prizes li {
+            background: #ffdf00;
+            color: #000;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border-radius: 50%;
+            font-size: 16px;
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.2);
+            }
+        }
+        .blinking {
+            animation: blink 1s step-start infinite;
+            color: #ffdf00;
+            font-weight: bold;
+        }
+        .breathing {
+            animation: breathe 2s infinite;
+            font-size: 20px;
+            color: #ffdf00;
+        }
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+        @keyframes breathe {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎄 Savings Goal Program 🎄</h1>
+        <p>Enter your number to verify if you’re part of our program and play our Christmas Roulette!</p>
+        <input type="text" id="numberInput" placeholder="Enter your number">
+        <button onclick="verifyNumber()">Verify</button>
+        <div id="message" class="message"></div>
+        <div class="roulette" id="roulette">
+            <ul class="prizes">
+                <li>100</li>
+                <li>150</li>
+                <li>200</li>
+                <li>300</li>
+                <li>350</li>
+                <li>400</li>
+                <li>500</li>
+                <li>550</li>
+                <li>1000</li>
+            </ul>
+            <button onclick="startRoulette()">🎮 Start to Play 🎮</button>
+        </div>
+        <div id="history" class="message"></div>
+    </div>
+
+    <!-- Audio Player -->
+    <audio id="backgroundMusic">
+        <source src="https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        const validNumbers = [
+            "09270878125",
+            "09186931504",
+            "09949533676",
+            "09063670501"
+        ];
+
+        let musicPlaying = false;
+        const music = document.getElementById("backgroundMusic");
+
+        // Function to play the background music when the button is clicked
+        function playBackgroundMusic() {
+            if (!musicPlaying) {
+                music.play();
+                musicPlaying = true;
+            }
+        }
+
+        function verifyNumber() {
+            const numberInput = document.getElementById("numberInput").value.trim();
+            const message = document.getElementById("message");
+            const roulette = document.getElementById("roulette");
+            const history = document.getElementById("history");
+
+            const savedData = JSON.parse(localStorage.getItem("savingsGameHistory")) || {};
+
+            if (savedData[numberInput]) {
+                const { prize } = savedData[numberInput];
+                history.innerHTML = `<span class='breathing'>🎉 You have already played. Your number: ${numberInput} won ${prize} pesos. You will automatically receive it on December 18, 2024. Watch out for your reward!</span>`;
+                message.textContent = "";
+                roulette.style.display = "none";
+                return;
+            }
+
+            if (validNumbers.includes(numberInput)) {
+                message.textContent = "🎉 Congratulations! Your number is valid. Spin the wheel to win exciting prizes!";
+                roulette.style.display = "block";
+                history.textContent = "";
+            } else {
+                message.textContent = "🎄 Sorry, your number is not a part of the Savings Goal Program. 🎅";
+                roulette.style.display = "none";
+                history.textContent = "";
+            }
+        }
+
+        function startRoulette() {
+            // Play the background music when the roulette starts
+            playBackgroundMusic();
+
+            const prizes = [100, 150, 200, 300, 350, 400, 500, 550, 1000];
+            const message = document.getElementById("message");
+            const numberInput = document.getElementById("numberInput").value.trim();
+
+            const roulette = document.querySelector(".prizes");
+            roulette.style.animation = "spin 3s linear";
+
+            setTimeout(() => {
+                roulette.style.animation = "none";
+                const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
+
+                message.textContent = `🎉 Congratulations! You won ${randomPrize} pesos! You will automatically receive it on December 18. Thank you for your trust in the Savings Goal Program.`;
+
+                // Save to local storage
+                const savedData = JSON.parse(localStorage.getItem("savingsGameHistory")) || {};
+                savedData[numberInput] = { prize: randomPrize };
+                localStorage.setItem("savingsGameHistory", JSON.stringify(savedData));
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

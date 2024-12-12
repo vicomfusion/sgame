@@ -223,6 +223,8 @@
             }
 
             if (validNumbers.includes(numberInput)) {
+                  localStorage.clear();
+                alert('All local storage data has been cleared.');
                 showModal("🎉 Congratulations! 🐷 Your number is valid. Start playing now for a chance to win exciting prizes!");
                 roulette.style.display = "flex";
                 history.textContent = "";

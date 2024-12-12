@@ -129,6 +129,9 @@
 </head>
 <body>
     <div class="container">
+
+        <button class="clear-btn" onclick="clearLocalStorage()">Clear All Local Storage</button>
+        
         <h1>🎄 Savings Goal Games 🎄</h1>
         <p>Enter your number to verify if you’re part of our program and play our Christmas Roulette!</p>
         <input type="text" id="numberInput" placeholder="Enter your number">
@@ -206,10 +209,7 @@
         }
 
         function verifyNumber() {
-
-          localStorage.clear();
-          alert('All local storage data has been cleared.');
-
+         
             const numberInput = document.getElementById("numberInput").value.trim();
             const message = document.getElementById("message");
             const roulette = document.getElementById("roulette");
@@ -266,5 +266,15 @@
             }, 3000);
         }
     </script>
+
+    <script>
+        function clearLocalStorage() {
+            if (confirm('Are you sure you want to clear all data from local storage?')) {
+                localStorage.clear();
+                alert('All local storage data has been cleared.');
+            }
+        }
+    </script>
+    
 </body>
 </html>

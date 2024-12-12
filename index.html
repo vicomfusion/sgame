@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Savings Goal Program - Christmas Game</title>
     <style>
         body {
@@ -13,6 +13,7 @@
             font-family: Arial, sans-serif;
             text-align: center;
             color: #fff;
+            overflow-x: hidden;
         }
         .container {
             display: flex;
@@ -27,17 +28,17 @@
         }
         input {
             padding: 10px;
-            font-size: 18px;
+            font-size: 16px;
             border-radius: 5px;
             border: none;
             outline: none;
             margin-bottom: 10px;
-            width: 80%;
-            max-width: 300px;
+            width: 90%;
+            max-width: 280px;
         }
         button {
             padding: 10px 20px;
-            font-size: 18px;
+            font-size: 16px;
             color: #fff;
             background-color: #ff3d3d;
             border: none;
@@ -50,44 +51,45 @@
         }
         .message {
             margin-top: 20px;
-            font-size: 18px;
+            font-size: 16px;
+            text-align: center;
+            padding: 0 10px;
         }
         .roulette {
             display: none;
             margin-top: 20px;
+            flex-direction: column;
+            align-items: center;
         }
         .prizes {
             list-style-type: none;
             padding: 0;
-            margin: 20px 0;
+            margin: 20px auto;
             display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
             justify-content: center;
-            position: relative;
-            animation: spin 0s linear infinite;
+            max-width: 300px;
         }
         .prizes li {
             background: #ffdf00;
             color: #000;
-            padding: 10px 15px;
-            margin: 0 5px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border-radius: 50%;
-            font-size: 16px;
+            font-size: 14px;
             animation: pulse 1s infinite alternate;
-        }
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
+            box-shadow: 0 0 5px rgba(255, 223, 0, 0.8);
         }
         @keyframes pulse {
             0% {
                 transform: scale(1);
             }
             100% {
-                transform: scale(1.2);
+                transform: scale(1.1);
             }
         }
         .blinking {
@@ -97,7 +99,7 @@
         }
         .breathing {
             animation: breathe 2s infinite;
-            font-size: 20px;
+            font-size: 18px;
             color: #ffdf00;
         }
         @keyframes blink {
@@ -110,7 +112,7 @@
                 transform: scale(1);
             }
             50% {
-                transform: scale(1.1);
+                transform: scale(1.05);
             }
         }
     </style>
@@ -126,12 +128,23 @@
             <ul class="prizes">
                 <li>100</li>
                 <li>150</li>
+                <li>175</li>
                 <li>200</li>
+                <li>250</li>
+                <li>275</li>
                 <li>300</li>
+                <li>325</li>
                 <li>350</li>
+                <li>375</li>
                 <li>400</li>
+                <li>425</li>
+                <li>475</li>
                 <li>500</li>
                 <li>550</li>
+                <li>575</li>
+                <li>700</li>
+                <li>800</li>
+                <li>900</li>
                 <li>1000</li>
             </ul>
             <button onclick="startRoulette()">🎮 Start to Play 🎮</button>
@@ -156,7 +169,6 @@
         let musicPlaying = false;
         const music = document.getElementById("backgroundMusic");
 
-        // Function to play the background music when the button is clicked
         function playBackgroundMusic() {
             if (!musicPlaying) {
                 music.play();
@@ -182,7 +194,8 @@
 
             if (validNumbers.includes(numberInput)) {
                 message.textContent = "🎉 Congratulations! Your number is valid. Spin the wheel to win exciting prizes!";
-                roulette.style.display = "block";
+                alert("Your number is valid. Get ready to spin the roulette!");
+                roulette.style.display = "flex";
                 history.textContent = "";
             } else {
                 message.textContent = "🎄 Sorry, your number is not a part of the Savings Goal Program. 🎅";
@@ -191,29 +204,36 @@
             }
         }
 
-        function startRoulette() {
-            // Play the background music when the roulette starts
-            playBackgroundMusic();
+    function startRoulette() {
+    playBackgroundMusic();
 
-            const prizes = [100, 150, 200, 300, 350, 400, 500, 550, 1000];
-            const message = document.getElementById("message");
-            const numberInput = document.getElementById("numberInput").value.trim();
+    const prizes = [100, 150, 175, 200, 250, 275, 300, 325, 350, 375, 400, 425, 475, 500, 550, 575, 700, 800, 900, 1000];
+    const message = document.getElementById("message");
+    const numberInput = document.getElementById("numberInput").value.trim();
+    const rouletteButton = document.querySelector(".roulette button");
 
-            const roulette = document.querySelector(".prizes");
-            roulette.style.animation = "spin 3s linear";
+    const roulette = document.querySelector(".prizes");
+    roulette.style.animation = "spin 3s linear";
 
-            setTimeout(() => {
-                roulette.style.animation = "none";
-                const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
+    // Disable the button to prevent repeated plays
+    rouletteButton.disabled = true;
+    rouletteButton.style.backgroundColor = "#aaa";
+    rouletteButton.style.cursor = "not-allowed";
 
-                message.textContent = `🎉 Congratulations! You won ${randomPrize} pesos! You will automatically receive it on December 18. Thank you for your trust in the Savings Goal Program.`;
+    setTimeout(() => {
+        roulette.style.animation = "none";
+        const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
 
-                // Save to local storage
-                const savedData = JSON.parse(localStorage.getItem("savingsGameHistory")) || {};
-                savedData[numberInput] = { prize: randomPrize };
-                localStorage.setItem("savingsGameHistory", JSON.stringify(savedData));
-            }, 3000);
-        }
+        message.textContent = `🎉 Congratulations! You won ${randomPrize} pesos! This game is played one time. See you next December ${new Date().getFullYear() + 1}. Thank you for your trust in the Savings Goal Program.`;
+
+        const savedData = JSON.parse(localStorage.getItem("savingsGameHistory")) || {};
+        savedData[numberInput] = { prize: randomPrize };
+        localStorage.setItem("savingsGameHistory", JSON.stringify(savedData));
+
+        alert("You are under Vic Ocampo's management as a savings goal slot holder. The prize you won will be processed directly through this channel and automatically transferred to you. Congratulations!");
+    }, 3000);
+}
+
     </script>
 </body>
 </html>

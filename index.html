@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Savings Goal Program - Christmas Game</title>
+    <title>Savings Goal Games</title>
     <style>
         body {
             margin: 0;
@@ -92,34 +92,44 @@
                 transform: scale(1.1);
             }
         }
-        .blinking {
-            animation: blink 1s step-start infinite;
-            color: #ffdf00;
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            color: #000;
+            text-align: center;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
             font-weight: bold;
         }
-        .breathing {
-            animation: breathe 2s infinite;
-            font-size: 18px;
-            color: #ffdf00;
-        }
-        @keyframes blink {
-            50% {
-                opacity: 0;
-            }
-        }
-        @keyframes breathe {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎄 Savings Goal Program 🎄</h1>
+        <h1>🎄 Savings Goal Games 🎄</h1>
         <p>Enter your number to verify if you’re part of our program and play our Christmas Roulette!</p>
         <input type="text" id="numberInput" placeholder="Enter your number">
         <button onclick="verifyNumber()">Verify</button>
@@ -152,6 +162,14 @@
         <div id="history" class="message"></div>
     </div>
 
+    <!-- Modal Structure -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('infoModal')">&times;</span>
+            <p id="modalMessage"></p>
+        </div>
+    </div>
+
     <!-- Audio Player -->
     <audio id="backgroundMusic">
         <source src="https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3" type="audio/mpeg">
@@ -176,6 +194,17 @@
             }
         }
 
+        function showModal(message) {
+            const modal = document.getElementById("infoModal");
+            const modalMessage = document.getElementById("modalMessage");
+            modalMessage.textContent = message;
+            modal.style.display = "block";
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
         function verifyNumber() {
             const numberInput = document.getElementById("numberInput").value.trim();
             const message = document.getElementById("message");
@@ -185,6 +214,7 @@
             const savedData = JSON.parse(localStorage.getItem("savingsGameHistory")) || {};
 
             if (savedData[numberInput]) {
+                playBackgroundMusic();
                 const { prize } = savedData[numberInput];
                 history.innerHTML = `<span class='breathing'>🎉 You have already played. Your number: ${numberInput} won ${prize} pesos. You will automatically receive it on December 18, 2024. Watch out for your reward!</span>`;
                 message.textContent = "";
@@ -193,47 +223,44 @@
             }
 
             if (validNumbers.includes(numberInput)) {
-                message.textContent = "🎉 Congratulations! Your number is valid. Spin the wheel to win exciting prizes!";
-                alert("Your number is valid. Get ready to spin the roulette!");
+                showModal("🎉 Congratulations! 🐷 Your number is valid. Start playing now for a chance to win exciting prizes!");
                 roulette.style.display = "flex";
                 history.textContent = "";
             } else {
-                message.textContent = "🎄 Sorry, your number is not a part of the Savings Goal Program. 🎅";
+                showModal("🎄 Sorry, your number is not a part of the Savings Goal Program. 🎅");
                 roulette.style.display = "none";
                 history.textContent = "";
             }
         }
 
-    function startRoulette() {
-    playBackgroundMusic();
+        function startRoulette() {
+            playBackgroundMusic();
+            const prizes = [100, 150, 175, 200, 250, 275, 300, 325, 350, 375, 400, 425, 475, 500, 550, 575, 700, 800, 900, 1000];
+            const message = document.getElementById("message");
+            const numberInput = document.getElementById("numberInput").value.trim();
+            const rouletteButton = document.querySelector(".roulette button");
 
-    const prizes = [100, 150, 175, 200, 250, 275, 300, 325, 350, 375, 400, 425, 475, 500, 550, 575, 700, 800, 900, 1000];
-    const message = document.getElementById("message");
-    const numberInput = document.getElementById("numberInput").value.trim();
-    const rouletteButton = document.querySelector(".roulette button");
+            const roulette = document.querySelector(".prizes");
+            roulette.style.animation = "spin 3s linear";
 
-    const roulette = document.querySelector(".prizes");
-    roulette.style.animation = "spin 3s linear";
+            // Disable the button to prevent repeated plays
+            rouletteButton.disabled = true;
+            rouletteButton.style.backgroundColor = "#aaa";
+            rouletteButton.style.cursor = "not-allowed";
 
-    // Disable the button to prevent repeated plays
-    rouletteButton.disabled = true;
-    rouletteButton.style.backgroundColor = "#aaa";
-    rouletteButton.style.cursor = "not-allowed";
+            setTimeout(() => {
+                roulette.style.animation = "none";
+                const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
 
-    setTimeout(() => {
-        roulette.style.animation = "none";
-        const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
+                message.textContent = `🎉 Congratulations! You won ${randomPrize} pesos! This game is played one time. See you next December ${new Date().getFullYear() + 1}. Thank you for your trust in the Savings Goal Program.`;
 
-        message.textContent = `🎉 Congratulations! You won ${randomPrize} pesos! This game is played one time. See you next December ${new Date().getFullYear() + 1}. Thank you for your trust in the Savings Goal Program.`;
+                const savedData = JSON.parse(localStorage.getItem("savingsGameHistory")) || {};
+                savedData[numberInput] = { prize: randomPrize };
+                localStorage.setItem("savingsGameHistory", JSON.stringify(savedData));
 
-        const savedData = JSON.parse(localStorage.getItem("savingsGameHistory")) || {};
-        savedData[numberInput] = { prize: randomPrize };
-        localStorage.setItem("savingsGameHistory", JSON.stringify(savedData));
-
-        alert("You are under Vic Ocampo's management as a savings goal slot holder. The prize you won will be processed directly through this channel and automatically transferred to you. Congratulations!");
-    }, 3000);
-}
-
+                showModal(`🏛️ You are under Vic Ocampo's management as a savings goal slot holder. 💰 The prize you won will be processed directly through this channel and automatically transferred 💸 to you. 🎉 Congratulations! Your prize is ${randomPrize} pesos.`);
+            }, 3000);
+        }
     </script>
 </body>
 </html>

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Savings Goal Games</title>
-	
     <style>
         body {
             margin: 0;
@@ -130,43 +129,18 @@
 </head>
 <body>
     <div class="container">
-
-      <!--  <button class="clear-btn" onclick="clearLocalStorage()">Reset</button> -->
-        
         <h1>🎄 Savings Goal Games 🎄</h1>
         <p>Enter your number to verify if you’re part of our program and play our Christmas Roulette!</p>
         <input type="text" id="numberInput" placeholder="Enter your number">
         <button onclick="verifyNumber()">Verify</button>
         <div id="message" class="message"></div>
         <div class="roulette" id="roulette">
-            <ul class="prizes">
-                <li>100</li>
-                <li>150</li>
-                <li>175</li>
-                <li>200</li>
-                <li>250</li>
-                <li>275</li>
-                <li>300</li>
-                <li>325</li>
-                <li>350</li>
-                <li>375</li>
-                <li>400</li>
-                <li>425</li>
-                <li>475</li>
-                <li>500</li>
-                <li>550</li>
-                <li>575</li>
-                <li>700</li>
-                <li>800</li>
-                <li>900</li>
-                <li>1000</li>
-            </ul>
-            <button onclick="startRoulette()">💎 Start to Play 🤑</button>
+            <ul class="prizes" id="prizesList"></ul>
+            <button onclick="startRoulette()" id="rouletteButton">💎 Start to Play 🤑</button>
         </div>
         <div id="history" class="message"></div>
     </div>
 
-    <!-- Modal Structure -->
     <div id="infoModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('infoModal')">&times;</span>
@@ -174,21 +148,13 @@
         </div>
     </div>
 
-    <!-- Audio Player -->
     <audio id="backgroundMusic">
         <source src="https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
     <script>
-	    
-        const validNumbers = [
-            "09270878125",
-            "09186931504",
-            "09949533676",
-            "09063670501"
-        ];
-
+        const validNumbers = ["09270878125", "09186931504", "09949533676", "09063670501"];
         let musicPlaying = false;
         const music = document.getElementById("backgroundMusic");
 
@@ -211,7 +177,6 @@
         }
 
         function verifyNumber() {
-         
             const numberInput = document.getElementById("numberInput").value.trim();
             const message = document.getElementById("message");
             const roulette = document.getElementById("roulette");
@@ -222,16 +187,17 @@
             if (savedData[numberInput]) {
                 playBackgroundMusic();
                 const { prize } = savedData[numberInput];
-                history.innerHTML = `<span class='breathing'>🎉 You have already played. Your number: ${numberInput} won ${prize} pesos. You will automatically receive it on December 18, 2024. Watch out for your reward!</span>`;
+                history.innerHTML = `🎉 You have already played. Your number: ${numberInput} won ${prize} pesos. You will automatically receive it on December 18, 2024.`;
                 message.textContent = "";
                 roulette.style.display = "none";
                 return;
             }
 
             if (validNumbers.includes(numberInput)) {
-                showModal("🎉 Congratulations! 🐷 Your number is valid. Start playing now for a chance to win exciting prizes!");
+                showModal("🎉 Congratulations! Your number is valid. Start playing now for a chance to win exciting prizes!");
                 roulette.style.display = "flex";
                 history.textContent = "";
+                populatePrizes();
             } else {
                 showModal("🎄 Sorry, your number is not a part of the Savings Goal Program. 🎅");
                 roulette.style.display = "none";
@@ -239,44 +205,50 @@
             }
         }
 
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function populatePrizes() {
+            const prizes = [100, 10, 175, 200, 5, 275, 300, 325, 15, 375, 400, 425, 20, 500, 35, 550, 700, 30, 60, 600, 1000, 75, 800, 40];
+            shuffleArray(prizes);
+            const prizesList = document.getElementById("prizesList");
+            prizesList.innerHTML = prizes.map(prize => `<li>${prize}</li>`).join("");
+        }
+
         function startRoulette() {
             playBackgroundMusic();
             const prizes = [100, 10, 175, 200, 5, 275, 300, 325, 15, 375, 400, 425, 20, 500, 35, 550, 700, 30, 60, 600, 1000, 75, 800, 40];
-            const message = document.getElementById("message");
+            shuffleArray(prizes);
+
+            const selectedPrize = prizes[Math.floor(Math.random() * prizes.length)];
             const numberInput = document.getElementById("numberInput").value.trim();
-            const rouletteButton = document.querySelector(".roulette button");
+            const history = document.getElementById("history");
 
-            const roulette = document.querySelector(".prizes");
-            roulette.style.animation = "spin 3s linear";
+            // Save the prize to localStorage
+            const savedData = JSON.parse(localStorage.getItem("savingsGameHistory")) || {};
+            savedData[numberInput] = { prize: selectedPrize };
+            localStorage.setItem("savingsGameHistory", JSON.stringify(savedData));
 
-            // Disable the button to prevent repeated plays
-            rouletteButton.disabled = true;
-            rouletteButton.style.backgroundColor = "#aaa";
-            rouletteButton.style.cursor = "not-allowed";
+            history.innerHTML = `🎉 Congratulations! You won ${selectedPrize} pesos. You will receive your prize on December 18, 2024.`;
 
-            setTimeout(() => {
-                roulette.style.animation = "none";
-                const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
-
-                message.textContent = `🎉 Congratulations! You won ${randomPrize} pesos! This game is played one time. See you next December ${new Date().getFullYear() + 1}. Thank you for your trust in the Savings Goal Program.`;
-
-                const savedData = JSON.parse(localStorage.getItem("savingsGameHistory")) || {};
-                savedData[numberInput] = { prize: randomPrize };
-                localStorage.setItem("savingsGameHistory", JSON.stringify(savedData));
-
-                showModal(`🏛️ You are under Vic Ocampo's management as a savings goal slot holder. 💰 The prize you won will be processed directly through this channel and automatically transferred 💸 to you. 🎉 Congratulations! Your prize is ${randomPrize} pesos.`);
-            }, 3000);
+            const roulette = document.getElementById("roulette");
+            roulette.style.display = "none";
+			
+			showModal(`🎉 You won ${selectedPrize} pesos! Enjoy your holidays! 🎄 \nThis game is played one time. See you next December ${new Date().getFullYear() + 1}. Thank you for your trust in the Savings Goal Program.`);
+						
+			   setTimeout(() => {
+			   showModal(`🏛️ You are under Vic Ocampo's management as a savings goal slot holder. 💰 The prize you won will be processed directly through this channel and automatically transferred 💸 to you.`);
+           	   }, 20000);
+		   
         }
-    </script>
 
-    <script>
-        function clearLocalStorage() {
-            if (confirm('Are you sure you want to clear all data from local storage?')) {
-                localStorage.clear();
-                alert('All local storage data has been cleared.');
-            }
-        }
+        // Automatically play background music on user interaction (mobile-friendly)
+        document.body.addEventListener("click", playBackgroundMusic, { once: true });
     </script>
-    
 </body>
 </html>
+
